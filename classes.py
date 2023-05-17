@@ -1,4 +1,5 @@
 from datetime import datetime 
+import pytz 
 
 class Forecast():
     def __init__(self, json):
@@ -24,7 +25,7 @@ class Hours():
             self.hours_list.append(new_hour)
             self.hours[data['time'][i]] = new_hour
             time_obj = datetime.strptime(data['time'][i],"%Y-%m-%dT%H:%M")
-            time_obj = time_obj.replace(tzinfo = self.timezone)
+            time_obj = time_obj.replace(tzinfo = pytz.timezone(self.timezone))
             print(time_obj)
             print(time_obj.tzinfo)
     # Returns list of the given category
