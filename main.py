@@ -7,7 +7,7 @@ cur_long = -87.647328
 
 params = {"latitude":cur_lat,
           "longitude":cur_long,
-          "hourly":"temperature_2m,relativehumidity_2m,dewpoint_2m,apparent_temperature,cloudcover,windspeed_10m"}
+          "hourly":"temperature_2m,relativehumidity_2m,dewpoint_2m,apparent_temperature,cloudcover,windspeed_10m,uv_index"}
 
 url = "https://api.open-meteo.com/v1/forecast?"
 x = requests.get(url, params=params)
