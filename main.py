@@ -15,10 +15,12 @@ params = {"latitude":cur_lat,
 url = "https://api.open-meteo.com/v1/forecast?"
 x = requests.get(url, params=params)
 #print(x.url)
+print("API Call Returned")
 ata = x.json()
 #print(ata)
 with open("test.json", "w" ) as fp:
     json.dump(ata, fp)
+
 
 forecasty = Forecast(ata)
 

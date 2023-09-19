@@ -7,44 +7,34 @@ class Forecast():
         self.latitude = json['latitude']
         self.longitude = json['longitude']
         self.timezone = json['timezone']
+        self.timezone_short = json['timezone_abbreviation']
+        self.elevation = json['elevation']
         self.units = ['hourly_units']
         self.hourly_prefixes = json['hourly_units'].keys()
-        self.hours = Hours(categories=self.hourly_prefixes, data=json['hourly'], timezone=self.timezone)
+        self.hours = HourOwner(json['hourly'], self.timezone)              
+#        self.dissect_hours(json['hourly'])
+#        self.hours = Hours(categories=self.hourly_prefixes, data=json['hourly'], timezone=self.timezone)
 
 
-class Hours():
-    def __init__(self, categories=[],data={}, timezone=""):
-        self.cats = list(categories)
-        self.timezone = timezone
-        self.hours = {}
-        self.hours_list = []
-        for i in range(0, len(data[self.cats[0]])):
-            new_hour = Hour()
-            for category in self.cats:
-                new_hour.add(category, data[category][i])
-            self.hours_list.append(new_hour)
-            self.hours[data['time'][i]] = new_hour
-            time_obj = datetime.strptime(data['time'][i],"%Y-%m-%dT%H:%M")
-            time_obj = time_obj.replace(tzinfo = pytz.timezone(self.timezone))
-            print(time_obj)
-            print(time_obj.tzinfo)
-    # Returns list of the given category
-    def get_plottable(self, category):
-        retval = []
-        for i in range(0, len(self.hours_list)):
-            retval.append(self.hours_list[i].get(category))
-        return retval
-
-
+class HourOwner():
+    def __init__(self, json_hourly, tz):
+        self.categories = list(json_hourly.keys())
+        self.timezone = tz
+        self.hour_dict = {}
+        self.hour_list = [Hour() for _ in range(len(json_hourly[self.categories[0]]))]
+        for category, value_list in json_hourly.items():
+            for index, value in enumerate(value_list):
+                self.hour_list[index].add(category, value)
+        for hour in self.hour_list:
+#            hour.info['time'] = datetime.strptime(hour.info['time'],"%Y-%m-%dT%H:%M")
+            self.hour_dict[hour.info['time']] = hour
+        print(self.hour_dict)
 class Hour():
     def __init__(self):
         self.info = {}
     def add(self, index, value):
         self.info[index] = value
     def __repr__(self):
-        retval = str(self.info['time']) + '\n'
-        for key, value in self.info.items():
-            retval += "\t{k}: {v}\n".format(k=key,v=value)
-        return retval
+        return "Hour Object at " + str(self.info['time'])
     def get(self, category):
         return self.info[category]
