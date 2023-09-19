@@ -1,7 +1,11 @@
 import requests
 import json
 import datetime
-from classes import Hour, Forecast
+from classes import Hour, Forecast, FuzzyRecallDict
+
+
+
+
 
 cur_lat = 41.946468
 cur_long = -87.647328
@@ -25,4 +29,6 @@ with open("test.json", "w" ) as fp:
 forecasty = Forecast(ata)
 
 now = datetime.datetime.now()
-print(now)
+print(repr(now))
+rightnow = forecasty.getHour(now)
+print(rightnow)
