@@ -26,7 +26,7 @@ class HourOwner():
             for index, value in enumerate(value_list):
                 self.hour_list[index].add(category, value)
         for hour in self.hour_list:
-#            hour.info['time'] = datetime.strptime(hour.info['time'],"%Y-%m-%dT%H:%M")
+            hour.info['time'] = datetime.strptime(hour.info['time'],"%Y-%m-%dT%H:%M")
             self.hour_dict[hour.info['time']] = hour
         print(self.hour_dict)
 class Hour():
@@ -38,3 +38,51 @@ class Hour():
         return "Hour Object at " + str(self.info['time'])
     def get(self, category):
         return self.info[category]
+    
+
+def BinarySearch(data, target):
+    def bs(data, target):
+        lb = 0
+        rb = len(data)
+        mid = 0
+        while lb < rb:
+            mid = (lb + rb) // 2
+            if data[mid] < target:
+                lb = mid + 1
+            else:
+                rb = mid
+
+        return lb
+    i = bs(data, target)
+    if i:
+        return i - 1
+    else:
+        return -1
+
+# Dictionary wrapper that allows for some give-or-take when choosing key.
+# In effect, the issue is time from the API is on the hour, and the time is
+# the key. But, the time of the call is not going to be on the hour. 
+# So, this dict allows for normal dict setting, but any getting will give
+# the nearest hour rounded down. So FuzzyRecallDict[11:45:00] will round down to
+# 11:00:00. To prevent additional setting, it gets locked.
+class FuzzyRecallDict():
+    def __init__(self):
+        self.locked = False
+        self.dict = {}
+        self.key_list = []
+    def __getitem__(self, key):
+        if key in self.dict:
+            return self.dict[key]
+        else:
+            result = BinarySearch(self.key_list, key)
+            return self.dict[self.key_list[result]]
+    def __setitem__(self, key, value):
+        if self.locked == False:
+            self.dict[key] = value
+            self.key_list.append(key)
+        else:
+            print("Insertion Denied")
+    def lock(self):
+        self.locked = True
+    def items():
+        pass
