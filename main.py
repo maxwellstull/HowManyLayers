@@ -14,7 +14,8 @@ params = {"latitude":cur_lat,
           "longitude":cur_long,
           "timezone":"auto",
           "forecast_days":2,
-          "hourly":"temperature_2m,relativehumidity_2m,dewpoint_2m,apparent_temperature,cloudcover,windspeed_10m,uv_index"}
+          "daily":"sunrise,sunset",
+          "hourly":"temperature_2m,relativehumidity_2m,dewpoint_2m,apparent_temperature,cloudcover,windspeed_10m,uv_index,rain,snowfall,precipitation_probability"}
 
 url = "https://api.open-meteo.com/v1/forecast?"
 x = requests.get(url, params=params)
@@ -32,7 +33,10 @@ duration = 3
 
 rightnow = forecasty.getHour(when)
 rightnow = forecasty.getRelevantHours(when, duration)
+
 print(rightnow)
+
 rec = Recommender()
 
-
+rec.feed_hourly_info(rightnow)
+rec.get_recommendation()

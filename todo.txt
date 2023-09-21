@@ -1,5 +1,6 @@
 - get recommendatinos based purely on temperature
     - add rain
+- recommender should remind sunscreen for high UV, hat/sunglasses for little cloud cover, etc
 
 
 
@@ -12,3 +13,25 @@ Questionaire:
 
 
 Default Thresholds:
+TORSO
+    BASE LAYERS:
+    - tshirt: >10
+    - secondskin: <10
+    OUTER LAYERS:
+    - light sweatshirt: <65
+    - heavy sweatshirt: <55
+    - jacket: <45
+    - coat: <30
+    COMPLICATION:
+    - windbreaker: wind > 15
+    - raincoat: raining
+LEGS
+    BASE LAYERS:
+    - shorts: >50
+    - jeans/khakis/sweatpants: <50
+    - secondskin: <10
+    OUTER LAYERS:
+    - Snowpants / skipants: <20, snowing
+HEAD
+    - hood >30
+    - winter hat <30
