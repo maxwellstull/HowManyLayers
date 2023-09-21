@@ -1,1 +1,14 @@
-- 
+- get recommendatinos based purely on temperature
+    - add rain
+
+
+
+Questionaire:
+- When stationary at room temperature, I usually: am cold, am comfortable, am hot
+- When doing light work (dishes, vacuuming, folding laundry) at room temperature, I usually: am cold, am comfortable, am hot
+- When doing heavy work (running, construction, burpees) at room temperature, I usually: am cold, am comfortable, am hot
+- When I go outside, compared to other people I am dressed: more heavily, about the same, much lighter
+- If I had to pick one, I would rather be: too cold, too hot
+
+
+Default Thresholds:

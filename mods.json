@@ -1,0 +1,11 @@
+{
+    "1": {
+        "Username": "maxws",
+        "Name": "Max",
+        "Coefficients": {
+            "WindspeedSens": 1,
+            "TemperatureSens": 1,
+            "HumiditySens":1
+        }
+    }
+}
