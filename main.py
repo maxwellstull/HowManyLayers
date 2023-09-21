@@ -1,7 +1,7 @@
 import requests
 import json
 import datetime
-from classes import Hour, Forecast, FuzzyRecallDict
+from classes import Hour, Forecast, FuzzyRecallDict, Recommender
 
 
 
@@ -18,17 +18,21 @@ params = {"latitude":cur_lat,
 
 url = "https://api.open-meteo.com/v1/forecast?"
 x = requests.get(url, params=params)
-#print(x.url)
 print("API Call Returned")
-ata = x.json()
-#print(ata)
+APIReturn = x.json()
 with open("test.json", "w" ) as fp:
-    json.dump(ata, fp)
+    json.dump(APIReturn, fp)
 
+forecasty = Forecast(APIReturn)
 
-forecasty = Forecast(ata)
+current_time = datetime.datetime.now()
 
-now = datetime.datetime.now()
-print(repr(now))
-rightnow = forecasty.getHour(now)
+when = datetime.datetime(2023, 9, 21, 14, 0, 0)
+duration = 3
+
+rightnow = forecasty.getHour(when)
+rightnow = forecasty.getRelevantHours(when, duration)
 print(rightnow)
+rec = Recommender()
+
+

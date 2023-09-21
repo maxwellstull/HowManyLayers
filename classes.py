@@ -1,5 +1,23 @@
 from datetime import datetime 
 import pytz 
+import json
+import os 
+
+class Recommender():
+    def __init__(self, filename = "mods.json"):
+        if not os.path.isfile(filename):
+            with open(filename, 'w') as fp:
+                json.dump({},fp)
+        with open(filename, 'r') as fp:
+            self.info = json.load(fp)
+        
+    def get_recommendation(self, weatherHour, user=1):
+        wind = self.info[user]['Coefficients']['WindspeedSens']
+        humid = self.info[user]['Coefficients']['HumiditySens']
+        temp = self.info[user]['Coefficients']['TemperatureSens']
+    
+
+
 
 class Forecast():
     def __init__(self, json):
@@ -14,6 +32,8 @@ class Forecast():
         self.hours = HourOwner(json['hourly'], self.timezone)              
     def getHour(self, hour):
         return self.hours.getHour(hour)
+    def getRelevantHours(self, req_hours, duration):
+        self.hours.getRelevantHours(req_hours, duration)
 
 class HourOwner():
     def __init__(self, json_hourly, tz):
@@ -29,6 +49,15 @@ class HourOwner():
             self.hour_dict[hour.info['time']] = hour
     def getHour(self, hour):
         return self.hour_dict[hour]
+    def getRelevantHours(self, req_hour, duration):
+        retval = []
+        tmp_hour = req_hour
+        for i in range(1, duration+1):
+            val = self.getHour(tmp_hour)
+            retval.append(val)
+            tmp_hour = tmp_hour.replace(hour=req_hour.hour + i)
+        print(retval)
+
 class Hour():
     def __init__(self):
         self.info = {}
