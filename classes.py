@@ -3,6 +3,22 @@ import pytz
 import json
 import os 
 
+
+class TimespanData():
+    def __init__(self, attribute, hours):
+        self.collection = []
+        for hour in hours:
+            self.collection.append(hour.info[attribute])
+
+        self.minimum = float(min(self.collection))
+        self.average = float(sum(self.collection)/len(self.collection))
+        self.maximum = float(max(self.collection))
+        print(self.minimum, self.average, self.maximum)
+    def __repr__(self):
+        retval = "[{min:4.1f}]-[{avg:4.1f}]-[{max:4.1f}]".format(min=self.minimum,avg=self.average,max=self.maximum)
+        return retval
+
+
 class Recommender():
     def __init__(self, filename = "mods.json"):
         if not os.path.isfile(filename):
@@ -10,11 +26,23 @@ class Recommender():
                 json.dump({},fp)
         with open(filename, 'r') as fp:
             self.info = json.load(fp)
+        self.timespans = []
+    def feed_hourly_info(self, hours):
+        for attr in hours[0].info.keys():
+            if attr == 'time':
+                continue
+            self.timespans.append(TimespanData(attr, hours))
+        print(self.timespans)
+    
+    
+    
+        pass
         
     def get_recommendation(self, weatherHour, user=1):
         wind = self.info[user]['Coefficients']['WindspeedSens']
         humid = self.info[user]['Coefficients']['HumiditySens']
         temp = self.info[user]['Coefficients']['TemperatureSens']
+
     
 
 
@@ -33,7 +61,7 @@ class Forecast():
     def getHour(self, hour):
         return self.hours.getHour(hour)
     def getRelevantHours(self, req_hours, duration):
-        self.hours.getRelevantHours(req_hours, duration)
+        return self.hours.getRelevantHours(req_hours, duration)
 
 class HourOwner():
     def __init__(self, json_hourly, tz):
@@ -56,7 +84,7 @@ class HourOwner():
             val = self.getHour(tmp_hour)
             retval.append(val)
             tmp_hour = tmp_hour.replace(hour=req_hour.hour + i)
-        print(retval)
+        return retval
 
 class Hour():
     def __init__(self):
