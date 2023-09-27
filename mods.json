@@ -3,9 +3,11 @@
         "Username": "maxws",
         "Name": "Max",
         "Coefficients": {
-            "WindspeedSens": 0,
-            "TemperatureSens": 0,
-            "HumiditySens":0
+            "WindspeedSens":1,
+            "TemperatureSens":1,
+            "HumiditySens":1,
+            "CloudCoverSens":1,
+            "UVSens":1
         }
     }
 }

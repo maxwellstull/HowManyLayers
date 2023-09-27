@@ -23,7 +23,14 @@ def main():
     assert t2[datetime(2023, 9, 20, 0, 0, 0)] == '19'
 
 
-
+    value = 50
+    match value:
+        case val if val < 5:
+            print("a")
+        case val if 5 <= val < 20:
+            print('b')
+        case val if val >= 20:
+            print('c')
 
 
 

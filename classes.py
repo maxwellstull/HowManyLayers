@@ -17,6 +17,13 @@ class Attire():
         self.outerpants = ""
 
         self.head = ""
+    def __repr__(self):
+        retval = """
+Head: {hd:}
+Torso: {sh:} {sw:} {co:}
+Legs: {lg:} {ot:}
+""".format(hd=self.head,sh=self.shirt,sw=self.sweater,co=self.complication,lg=self.legs,ot=self.outerpants)
+        return retval
 
 class TimespanData():
     def __init__(self, attribute, hours):
@@ -30,7 +37,6 @@ class TimespanData():
     def __repr__(self):
         retval = "{attr:<10s}: [{min:4.1f}]-[{avg:4.1f}]-[{max:4.1f}]\n".format(attr=self.attribute[:10], min=self.minimum,avg=self.average,max=self.maximum)
         return retval
-
 
 class Recommender():
     def __init__(self, filename = "mods.json"):
@@ -50,21 +56,27 @@ class Recommender():
         wind_mod = self.info[user]['Coefficients']['WindspeedSens']
         humid_mod = self.info[user]['Coefficients']['HumiditySens']
         temp_mod = self.info[user]['Coefficients']['TemperatureSens']
+        cloud_mod = self.info[user]['Coefficients']['CloudCoverSens']
+        UV_mod = self.info[user]['Coefficients']['UVSens']
+
 
         temp = CtoF(self.timespans['temperature_2m'].average)
         wind = self.timespans['windspeed_10m'].average
         humid = self.timespans['relativehumidity_2m'].average
+        cloud = self.timespans['cloudcover'].average
+        uv = self.timespans['uv_index'].average
 
         att = Attire()
         # base layer
         print("RECOMMENDATION:")
-        match temp + temp_mod:
+        adjusted_value = temp + temp_mod
+        match adjusted_value:
             case val if val > 10:
                 att.shirt = "Tshirt"
             case val if val <= 10:
                 att.shirt = "Secondskin"
         # outer layer
-        match temp + temp_mod:
+        match adjusted_value:
             case val if val > 65:
                 pass
             case val if 55 < val <= 65:
@@ -76,7 +88,7 @@ class Recommender():
             case val if val <= 30:
                 att.sweater = "Coat"
         # pants
-        match temp + temp_mod:
+        match adjusted_value:
             case val if val > 50:
                 att.legs = "Shorts"
             case val if 10 < val <= 50:
@@ -88,9 +100,11 @@ class Recommender():
                 att.outerpants = "Snowpants"
         match temp + temp_mod:
             case val if 30 < val < 45:
-                print("Hood")
+                att.head = "Hood"
             case val if val <= 30:
-                print("Hat")
+                att.head = "Hat"
+
+        return att
 class Forecast():
     def __init__(self, json):
         # Location information

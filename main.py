@@ -28,15 +28,15 @@ forecasty = Forecast(APIReturn)
 
 current_time = datetime.datetime.now()
 
-when = datetime.datetime(2023, 9, 21, 14, 0, 0)
+when = datetime.datetime(2023, 9, 27, 16, 0, 0)
+if when < current_time:
+    when = current_time
 duration = 3
 
-rightnow = forecasty.getHour(when)
 rightnow = forecasty.getRelevantHours(when, duration)
-
-print(rightnow)
 
 rec = Recommender()
 
 rec.feed_hourly_info(rightnow)
-rec.get_recommendation()
+res = rec.get_recommendation()
+print(res)
