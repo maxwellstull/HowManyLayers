@@ -35,3 +35,13 @@ LEGS
 HEAD
     - hood >30
     - winter hat <30
+
+
+
+Inputs:
+Temperature
+Windspeed
+Humidity
+Cloudcover
+UV Index
+Activity Level
