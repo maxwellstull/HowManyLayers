@@ -25,6 +25,11 @@ class Activity(Enum):
     MOVING = 2
     RUNNING = 3
 
+associations = {"temperature_2m": "Temperature",
+                "windspeed_10m": "Windspeed",
+                "relativehumidity_2m":"Humidity",
+                "cloudcover":"Cloudcover",
+                "uv_index":"UV"}
 
 def CtoF(cel):
     return (cel*9/5) + 32
@@ -70,7 +75,10 @@ class Recommender():
         self.timespans = {}
     def train(self, filename='train.csv'):
         data = pd.read_csv(filename)        
-        x_train = data[["Temperature","Windspeed","Humidity","Cloudcover","UV","Activity"]]
+
+        headers = list(associations.values()) + ['Activity']
+
+        x_train = data[headers]
 
         y_train_base = data['Base']
         self.regr_b = linear_model.LogisticRegression(max_iter=10000)
@@ -143,11 +151,10 @@ class HourOwner():
         return retval
     def getLRList(self, req_hour):
         val = self.getHour(req_hour)
-        retval = [val.info['temperature_2m'],
-                  val.info['windspeed_10m'],
-                  val.info['relativehumidity_2m'],
-                  val.info['cloudcover'],
-                  val.info['uv_index']]
+        retval = {}
+        for key, value in associations.items():
+            retval[value] = [val.info[key]]
+
         return retval
 class Hour():
     def __init__(self):
