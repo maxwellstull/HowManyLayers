@@ -33,31 +33,5 @@ def main():
         case val if val >= 20:
             print('c')
 
-    data = {"A": [5,4,5,6,3,],
-            "B": [10,9,11,12,8],
-            "C": [1,0,1,1,0],}
-    data2 = {
-        "Temperature":[],
-        "Windspeed":[],
-        "Humidity":[],
-        "Cloudcover":[],
-        "UV Index":[],
-        "Activity Level":[]
-    }
-
-    df = pandas.DataFrame(data)
-    print(df)
-    X = df[['A','B']]
-    y = df['C']
-
-
-    regr = linear_model.LogisticRegression()
-    regr.fit(X,y)
-
-    pred = regr.predict([[4,100]])
-    print(pred)
-    print(regr.coef_)
-
-
 if __name__ == "__main__":
     main()
