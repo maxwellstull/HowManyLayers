@@ -2,6 +2,28 @@ from datetime import datetime
 import pytz 
 import json
 import os 
+import pandas as pd
+from sklearn import linear_model
+from enum import Enum
+
+class BaseLayer(Enum):
+    SHIRT = 1           # tshirt, long sleeve
+    SECONDSKIN = 2      # underarmor
+class OuterLayer(Enum):
+    NONE = 0
+    SWEATSHIRT = 1      
+    WINDBREAKER = 2
+    JACKET = 3
+    COAT = 4
+    SUPERCOLD = 5   # sweatshirt and a coat
+class Legs(Enum):
+    SHORTS = 1
+    PANTS = 2
+    SUPERCOLD = 3   # pants and long underwear
+class Activity(Enum):
+    WALKING = 1
+    MOVING = 2
+    RUNNING = 3
 
 
 def CtoF(cel):
@@ -39,13 +61,32 @@ class TimespanData():
         return retval
 
 class Recommender():
-    def __init__(self, filename = "mods.json"):
-        if not os.path.isfile(filename):
-            with open(filename, 'w') as fp:
-                json.dump({},fp)
-        with open(filename, 'r') as fp:
-            self.info = json.load(fp)
+    def __init__(self):
+#        if not os.path.isfile(filename):
+#            with open(filename, 'w') as fp:
+#                json.dump({},fp)
+#        with open(filename, 'r') as fp:
+#            self.info = json.load(fp)
         self.timespans = {}
+    def train(self, filename='train.csv'):
+        data = pd.read_csv(filename)        
+        x_train = data[["Temperature","Windspeed","Humidity","Cloudcover","UV","Activity"]]
+
+        y_train_base = data['Base']
+        print(x_train)
+        print(y_train_base)
+        self.regr_b = linear_model.LogisticRegression()
+        self.regr_b.fit(x_train, y_train_base)
+
+        y_train_outer = data['Outer']
+        self.regr_o = linear_model.LogisticRegression()
+        self.regr_o.fit(x_train, y_train_outer)
+
+        y_train_legs = data['Legs']
+        self.regr_l = linear_model.LogisticRegression()
+        self.regr_l.fit(x_train, y_train_legs)
+
+
     def feed_hourly_info(self, hours):
         for attr in hours[0].info.keys():
             if attr == 'time':
@@ -53,58 +94,8 @@ class Recommender():
             self.timespans[attr] = TimespanData(attr, hours)
 
     def get_recommendation(self, user='1'):
-        wind_mod = self.info[user]['Coefficients']['WindspeedSens']
-        humid_mod = self.info[user]['Coefficients']['HumiditySens']
-        temp_mod = self.info[user]['Coefficients']['TemperatureSens']
-        cloud_mod = self.info[user]['Coefficients']['CloudCoverSens']
-        UV_mod = self.info[user]['Coefficients']['UVSens']
+        pass
 
-
-        temp = CtoF(self.timespans['temperature_2m'].average)
-        wind = self.timespans['windspeed_10m'].average
-        humid = self.timespans['relativehumidity_2m'].average
-        cloud = self.timespans['cloudcover'].average
-        uv = self.timespans['uv_index'].average
-
-        att = Attire()
-        # base layer
-        print("RECOMMENDATION:")
-        adjusted_value = temp + temp_mod
-        match adjusted_value:
-            case val if val > 10:
-                att.shirt = "Tshirt"
-            case val if val <= 10:
-                att.shirt = "Secondskin"
-        # outer layer
-        match adjusted_value:
-            case val if val > 65:
-                pass
-            case val if 55 < val <= 65:
-                att.sweater = "Light Sweatshirt"
-            case val if 45 < val <= 55:
-                att.sweater = "Heavy Sweatshirt"
-            case val if 30 < val <= 45:
-                att.sweater = "Jacket"
-            case val if val <= 30:
-                att.sweater = "Coat"
-        # pants
-        match adjusted_value:
-            case val if val > 50:
-                att.legs = "Shorts"
-            case val if 10 < val <= 50:
-                att.legs = "Pants"
-            case val if val <= 10:
-                att.legs = "Long Underwear"
-        match temp + temp_mod:
-            case val if val < 0: # | if snowing:
-                att.outerpants = "Snowpants"
-        match temp + temp_mod:
-            case val if 30 < val < 45:
-                att.head = "Hood"
-            case val if val <= 30:
-                att.head = "Hat"
-
-        return att
 class Forecast():
     def __init__(self, json):
         # Location information
