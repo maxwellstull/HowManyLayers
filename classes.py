@@ -73,19 +73,22 @@ class Recommender():
         x_train = data[["Temperature","Windspeed","Humidity","Cloudcover","UV","Activity"]]
 
         y_train_base = data['Base']
-        print(x_train)
-        print(y_train_base)
-        self.regr_b = linear_model.LogisticRegression()
+        self.regr_b = linear_model.LogisticRegression(max_iter=10000)
         self.regr_b.fit(x_train, y_train_base)
 
         y_train_outer = data['Outer']
-        self.regr_o = linear_model.LogisticRegression()
+        self.regr_o = linear_model.LogisticRegression(max_iter=10000)
         self.regr_o.fit(x_train, y_train_outer)
 
         y_train_legs = data['Legs']
-        self.regr_l = linear_model.LogisticRegression()
+        self.regr_l = linear_model.LogisticRegression(max_iter=10000)
         self.regr_l.fit(x_train, y_train_legs)
 
+    def LRPredict(self, data):
+        base = self.regr_b.predict(data)
+        outer = self.regr_o.predict(data)
+        legs = self.regr_l.predict(data)
+        print(BaseLayer(base).name,OuterLayer(outer).name,Legs(legs).name)
 
     def feed_hourly_info(self, hours):
         for attr in hours[0].info.keys():
@@ -111,7 +114,8 @@ class Forecast():
         return self.hours.getHour(hour)
     def getRelevantHours(self, req_hours, duration):
         return self.hours.getRelevantHours(req_hours, duration)
-
+    def getLRList(self, req_hours):
+        return self.hours.getLRList(req_hours)
 class HourOwner():
     def __init__(self, json_hourly, tz):
         self.categories = list(json_hourly.keys())
@@ -120,7 +124,10 @@ class HourOwner():
         self.hour_list = [Hour() for _ in range(len(json_hourly[self.categories[0]]))]
         for category, value_list in json_hourly.items():
             for index, value in enumerate(value_list):
-                self.hour_list[index].add(category, value)
+                if category == 'temperature_2m':
+                    self.hour_list[index].add(category, CtoF(value))
+                else:
+                    self.hour_list[index].add(category, value)
         for hour in self.hour_list:
             hour.info['time'] = datetime.strptime(hour.info['time'],"%Y-%m-%dT%H:%M")
             self.hour_dict[hour.info['time']] = hour
@@ -134,7 +141,14 @@ class HourOwner():
             retval.append(val)
             tmp_hour = tmp_hour.replace(hour=req_hour.hour + i)
         return retval
-
+    def getLRList(self, req_hour):
+        val = self.getHour(req_hour)
+        retval = [val.info['temperature_2m'],
+                  val.info['windspeed_10m'],
+                  val.info['relativehumidity_2m'],
+                  val.info['cloudcover'],
+                  val.info['uv_index']]
+        return retval
 class Hour():
     def __init__(self):
         self.info = {}

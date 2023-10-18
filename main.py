@@ -1,7 +1,7 @@
 import requests
 import json
 import datetime
-from classes import Hour, Forecast, FuzzyRecallDict, Recommender
+from classes import Hour, Forecast, FuzzyRecallDict, Recommender, CtoF
 
 
 
@@ -31,15 +31,11 @@ current_time = datetime.datetime.now()
 when = datetime.datetime(2023, 10, 12, 13, 0, 0)
 if when < current_time:
     when = current_time
-duration = 3
+duration = 1
 
-rightnow = forecasty.getRelevantHours(when, duration)
-print(rightnow)
+data = forecasty.getLRList(when)
+data.append(1)
 
 rec = Recommender()
-rec.feed_hourly_info(rightnow)
-
 rec.train()
-
-res = rec.get_recommendation()
-print(res)
+rec.LRPredict([data])
