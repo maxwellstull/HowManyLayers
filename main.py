@@ -2,7 +2,7 @@ import requests
 import json
 import datetime
 from classes import Hour, Forecast, FuzzyRecallDict, Recommender, CtoF
-
+import pandas as pd
 
 
 
@@ -33,9 +33,9 @@ if when < current_time:
     when = current_time
 duration = 1
 
-data = forecasty.getLRList(when)
-data.append(1)
-
+data = pd.DataFrame(forecasty.getLRList(when))
+data['Activity'] = [1]
+print(data)
 rec = Recommender()
 rec.train()
-rec.LRPredict([data])
+rec.LRPredict(data)
