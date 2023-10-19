@@ -21,8 +21,8 @@ def main():
 
 
     APIReturn = getOpenMeteo()
-    with open("test.json", "w" ) as fp:
-        json.dump(APIReturn, fp)
+#    with open("test.json", "w" ) as fp:
+#        json.dump(APIReturn, fp)
 
     forecasty = Forecast(APIReturn)
     current_time = datetime.datetime.now()
