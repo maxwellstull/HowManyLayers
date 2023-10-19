@@ -132,7 +132,7 @@ class HourOwner():
         self.hour_list = [Hour() for _ in range(len(json_hourly[self.categories[0]]))]
         for category, value_list in json_hourly.items():
             for index, value in enumerate(value_list):
-                if category == 'temperature_2m':
+                if (category == 'temperature_2m') or (category == 'apparent_temperature'):
                     self.hour_list[index].add(category, CtoF(value))
                 else:
                     self.hour_list[index].add(category, value)

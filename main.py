@@ -26,12 +26,18 @@ with open("test.json", "w" ) as fp:
 
 forecasty = Forecast(APIReturn)
 
+
 current_time = datetime.datetime.now()
+
+print(forecasty.getHour(current_time))
+
 
 when = datetime.datetime(2023, 10, 12, 13, 0, 0)
 if when < current_time:
     when = current_time
-duration = 1
+duration = 3
+
+print(forecasty.getRelevantHours(when, duration))
 
 data = pd.DataFrame(forecasty.getLRList(when))
 data['Activity'] = [1]
